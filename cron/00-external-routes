@@ -1,0 +1,38 @@
+#!/bin/bash 
+
+if [ -f /etc/ganeti/common.sh ] ; then
+   . /etc/ganeti/common.sh
+else
+   exit 0
+fi
+
+declare -A ips
+declare -A nodeips
+
+if [ $(i_am_master) ] ; then
+   if [ -f /tmp/ganeti.checkroute ] ; then
+      #nlist=$(get_instances_running_list)
+      for node in $(get_nodelist)
+      do
+         for i in $(get_ovh_iplist $node)
+         do
+            ips[$i]=$node
+         done
+         nodeips[$node]=$(get_node_extip $node)
+      done
+      for node in ${!nodeips[@]}
+      do
+         for nip in ${nodeips[$node]}
+         do
+            if [ x"${ips[$nip]}" != x"$node" ] ; then
+               echo "moving $nip from ${ips[$nip]} to $node"
+               move_ovh_ip ${ips[$nip]} $node $nip
+            fi
+         done
+      done
+      rm -f /tmp/ganeti.checkroute
+   fi
+fi
+#echo ${ips[@]} ${#ips[@]} ${!ips[@]} 
+#echo ${nodeips[@]} ${#nodeips[@]} ${!nodeips[@]}
+

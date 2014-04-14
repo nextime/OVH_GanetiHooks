@@ -1,0 +1,58 @@
+#!/usr/bin/env php
+<?php
+
+$hostmap=array(
+   'node1.example.net' => array('ip' => '94.93.92.91', 'name' => 'ns999999.ovh.net'),
+   'node2.example.net' => array('ip' => '91.92.93.94', 'name' => 'ns888888.ovh.net'),
+);
+
+$username="ab12345-ovh";
+$passwd="password";
+
+
+$cmd=$argv[1];
+if(count($argv) > 2) $host=$argv[2];
+if(count($argv) > 3) $dest=$argv[3];
+if(count($argv) > 4) $addr=$argv[4];
+
+try {
+   $soap = new SoapClient("https://www.ovh.com/soapi/soapi-re-1.24.wsdl");
+
+   //login
+   $session = $soap->login($username, $passwd,"it", false);
+
+
+   switch($cmd)
+   {
+
+      case "list":
+         //dedicatedFailoverList
+         $result = $soap->dedicatedFailoverList($session, $hostmap[$host]['name']);
+         //print_r($result); // your code here ...
+         foreach($result as $fip)
+         {
+            if(strlen($fip->ip) >= 7) {
+               print_r("$fip->ip\n");
+            }
+         }
+         break;
+
+      case "move":
+
+         $soap->dedicatedFailoverUpdate($session, $hostmap[$host]['name'], "$addr", $hostmap[$dest]['ip']);
+         break;
+
+      case "rev6":
+         $soap->dedicatedReverseAdd($session, $hostmap[$host]['name'], $dest, $addr );
+
+   }
+
+
+ //logout
+ $soap->logout($session);
+
+} catch(SoapFault $fault) {
+   exit(1);
+}
+
+?>

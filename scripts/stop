@@ -1,0 +1,30 @@
+#!/bin/bash
+env > /tmp/antani.env
+
+if [ -f /etc/ganeti/common.sh ] ; then
+   . /etc/ganeti/common.sh
+else
+   exit 0 
+fi
+routes=$(gettags $GANETI_INSTANCE_NAME)
+IFS=',' 
+for tag in $routes
+do 
+   route=`echo $tag | awk -F ':' '{print $2":"$3}'`
+   addr=`echo $route | awk -F ':' '{print $1}'`
+   iface=`echo $route | awk -F ':' '{print $2}'`
+   del_route $addr
+done
+
+v6routes=$(getv6tags $GANETI_INSTANCE_NAME)
+for tag in $v6routes
+do
+   rtype=`echo $tag | awk -F '_' '{print $1}'`
+   if [ x"$rtype" == x"v6" ] ; then
+      route=`echo $tag | awk -F '_' '{print $2":"$3}'`
+      addr=`echo $route | awk -F '_' '{print $1}'`
+      iface=`echo $route | awk -F '_' '{print $2}'`
+      del_v6route $addr/128 $iface
+   fi
+done
+unset IFS
