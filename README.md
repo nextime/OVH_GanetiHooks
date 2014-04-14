@@ -12,11 +12,11 @@ for example:
 gnt-instance add-tags instance01 route:81.82.83.84/32:br0
 
 
-1- put all the directory and files of the tarball in /etc/ganeti
-2- edit /etc/ganeti/scripts/ovh_cmd and change both $hostmap, $username and $passwd according to your use case
-3- put a crontab that touch /tmp/ganeti.checkroute one time every $(choose_your_time, i use 1 hour)
-4- put a touch /tmp/ganeti.checkroute in /etc/rc.local
-5- put a crontab to execute every minute /etc/ganeti/cron/00-external-routes (look at example crontab)
+ * put all the directory and files of the tarball in /etc/ganeti
+ * edit /etc/ganeti/scripts/ovh_cmd and change both $hostmap, $username and $passwd according to your use case
+ * put a crontab that touch /tmp/ganeti.checkroute one time every $(choose_your_time, i use 1 hour)
+ * put a touch /tmp/ganeti.checkroute in /etc/rc.local
+ * put a crontab to execute every minute /etc/ganeti/cron/00-external-routes (look at example crontab)
 
 Every time you migrate, move, failover, start, stop an instance, it should automagically update ovh failover routes.
 
