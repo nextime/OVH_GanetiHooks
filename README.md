@@ -1,3 +1,5 @@
+# NOTE: THIS SOURCE IS OBSOLETE, NEW REPOSITORY MOVED TO https://git.nexlab.net/nextime/OVH_GanetiHooks 
+
 To use this you should separe your ip failover ripe in single ip failover /32, and route
 every ip to your virtual machines as singular 255.255.255.255 netmask ip.
 
